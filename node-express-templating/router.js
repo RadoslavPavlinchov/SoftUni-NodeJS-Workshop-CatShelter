@@ -7,7 +7,11 @@ router.use(function timelog(req, res, next) {
 })
 
 router.get('/', (req, res) => {
-    res.send('<h1>Home Page</h1>')
+    res.status(200).send('<h1>Home Page</h1>')
+})
+
+router.get('/login', (req, res) => {
+    res.status(200).send('<h1>Login Page</h1>')
 })
 
 router.get('/about', (req, res) => {
