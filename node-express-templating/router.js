@@ -7,7 +7,10 @@ router.use(function timelog(req, res, next) {
 })
 
 router.get('/', (req, res) => {
-    res.status(200).send('<h1>Home Page</h1>')
+    res.render(__dirname + '/views/index.hbs', {
+        title: 'This is the main title!',
+        test: 'We have to work for this body'
+    })
 })
 
 router.get('/login', (req, res) => {
