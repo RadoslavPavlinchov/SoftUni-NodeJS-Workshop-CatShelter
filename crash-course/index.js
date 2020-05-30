@@ -1,34 +1,39 @@
 const express = require('express');
 const path = require('path');
-const users = require('./Users');
+const hbs = require('express-handlebars');
+const router = require('./routes/api/users');
 const logger = require('./middleware/logger');
+const users = require('./Users');
 
 const app = express();
 
 const PORT = process.env.PORT || 5000;
 
 // Middleware init
-app.use(logger);
+// app.use(logger);
 
-// Get all users
-app.get('/api/users', (req, res) => {
-    res.json(users);
-})
+// Handlebars
+app.engine('handlebars', hbs({ defaultLayout: 'main' }));
+app.set('view engine', 'handlebars');
 
-// Get a single user
-app.get('/api/users/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const found = users.some(user => user.id === id);
-    
-    if (found) {
-        res.json(users.filter(user => user.id === id));
-    } else {
-        res.status(400).json({ msg: `No user with id of ${id}` })
-    }
-})
+app.get('/', function (req, res) {
+    res.render('index', {
+        title: 'NodeJS workshop',
+        users
+    });
+});
 
 // Set a static folder
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Body parser
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Router
+app.use('/api/users', router);
+
+
 
 app.listen(PORT, () => {
     console.log(`The server is running on port: ${PORT}`);
