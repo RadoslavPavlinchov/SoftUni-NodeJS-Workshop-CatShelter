@@ -26,6 +26,10 @@ class CubeModel {
         }
     }
 
+    find(predFn) {
+        return Promise.resolve(this.db.entities.filter(predFn));
+    }
+
     get(id) {
         return Promise.resolve(this.db.entities.find(({ id: i}) => i === id));
     }
