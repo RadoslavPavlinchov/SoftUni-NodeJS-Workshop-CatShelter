@@ -1,3 +1,19 @@
-[
-    
-]
+{
+  "entities": [
+    {
+      "id": "bf494eb8-9bb3-4791-bf33-4121ba753e3d",
+      "name": "New name",
+      "description": "test test"
+    },
+    {
+      "id": "18e15573-7823-4c68-8d73-3d17e9d1e2a6",
+      "name": "test",
+      "description": "test test"
+    },
+    {
+      "id": "c6ceb7a3-9769-4cc3-a090-a4f479c372ce",
+      "name": "test",
+      "description": "test test"
+    }
+  ]
+}
