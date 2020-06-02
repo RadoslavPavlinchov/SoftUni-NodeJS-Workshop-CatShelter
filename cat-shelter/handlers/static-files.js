@@ -4,16 +4,18 @@ const url = require('url');
 function getContentType(url) {
     if (url.endsWith('css')) {
         return 'text/css';
-    } else if (url.endsWith('html')) {
+    } else if (url.endsWith('.html')) {
         return 'text/html';
-    } else if (url.endsWith('jpeg')) {
+    } else if (url.endsWith('.jpeg')) {
         return 'image/jpeg';
-    } else if (url.endsWith('png')) {
+    } else if (url.endsWith('.png')) {
         return 'image/png';
-    } else if (url.endsWith('js')) {
+    } else if (url.endsWith('.js')) {
         return 'application/javascript';
-    } else if (url.endsWith('json')) {
+    } else if (url.endsWith('.json')) {
         return 'application/json';
+    } else if (url.endsWith('.ico')) {
+        return 'image/vnd.microsoft.icon';
     }
 }
 
