@@ -1,4 +1,4 @@
-const cubeModel = require('../models/cube');
+const cubeModel = require('../models/cube.js');
 
 function index(req, res, next) {
     // const { search, from, to } = req.query;
@@ -17,7 +17,7 @@ function index(req, res, next) {
     // }
     cubeModel.find().then(cubes => {
         res.render('index.hbs', { 
-            // cubes, 
+            cubes, 
             // search, 
             // from, 
             // to 
