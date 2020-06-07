@@ -1,29 +1,24 @@
-global.__basedir = __dirname;
+const mongoose = require('mongoose')
+const config = require('./config/config')
+const express = require('express')
+const indexRouter = require('./routes')
+const app = express()
 
-const dbConnector = require('./config/db');
-dbConnector().then(() => {
-    const config = require('./config/config')
-    const express = require('express');
-    const app = express();
+mongoose.connect(config.dbUrl, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}, (err) => {
+  if (err) {
+    console.error(err)
+    throw err
+  }
 
-    require('./config/express')(app);
-    require('./config/routes')(app);
-
-    app.listen(config.port, console.log(`Listening on port ${config.port}! Now its up to you...`));
-}).catch(err => {
-    console.log(err);
+  console.log('Database is setup and running')
 })
 
 
-// const dbUrl = 'mongodb://localhost:27017';
-// const { MongoClient } = require('mongodb');
-// const client = new MongoClient(dbUrl, { useUnifiedTopology: true });
-// client.connect(function(err) {
-//     if (err) { console.log(err); return; }
-//     console.log('Connected successfully to MongoDB');
-//     const db = client.db('testdb');
-//     const users = db.collection('users');
-//     users.insert({ name: 'test' }).then(user => {
-//          console.log(user);
-//     })
-// });
+require('./config/express')(app)
+
+app.use('/', indexRouter)
+
+app.listen(config.port, console.log(`Listening on port ${config.port}!`))
