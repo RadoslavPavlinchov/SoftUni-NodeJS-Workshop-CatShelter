@@ -4,7 +4,9 @@
         <h4 class="card-title">{{title}}</h4>
     </div>
     <div class="card-footer">
+        {{#if isLoggedIn}}
         <a href="/course/details/{{_id}}"><button type="button" class="btn btn-info">Details</button></a>
+        {{/if}}
         <small class="float-right">{{createdAt}}</small>
     </div>
 </div>

@@ -2,6 +2,7 @@ const models = require('../models');
 const jwt = require('../utils/jwt');
 // it might need to use config instead of cookie
 const { cookie } = require('../config/config');
+const config = require('../config/config');
 
 module.exports = {
     get: {
@@ -10,6 +11,9 @@ module.exports = {
         },
         register: (req, res, next) => {
             res.render('register.hbs', { pageTitle: 'Register Page' })
+        },
+        logout: (req, res, next) => {
+            res.clearCookie(config.cookie).redirect('/');
         }
     },
     post: {
