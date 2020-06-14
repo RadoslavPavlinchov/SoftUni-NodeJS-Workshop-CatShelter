@@ -1,3 +1,4 @@
+require('dotenv').config()
 const mongoose = require('mongoose')
 const config = require('./config/config')
 const express = require('express')
@@ -10,6 +11,7 @@ mongoose.connect(config.dbUrl, {
 }, (err) => {
   if (err) {
     console.error(err)
+    console.log('this is the config print', config.dbUrl);
     throw err
   }
 
