@@ -6,7 +6,7 @@ const privateKey = process.env.PRIVATE_KEY;
 const saltRounds = 10;
 
 const generateToken = (data) => {
-    const token = jwt.sign({ data }, privateKey);
+    const token = jwt.sign(data, privateKey);
     return token;
 };
 
@@ -23,7 +23,10 @@ const registerUser = async (req, res) => {
 
     const userObj = await user.save();
 
-    const token = generateToken(userObj)
+    const token = generateToken({
+        userId: userObj._id,
+        username: userObj.username
+    })
 
     res.cookie('aid', token);
 
@@ -38,7 +41,10 @@ const loginUser = async (req, res) => {
     const status = await bcrypt.compare(password, userObj.password);
 
     if (status) {
-        const token = generateToken(userObj)
+        const token = generateToken({
+            userId: userObj._id,
+            username: userObj.username
+        })
         res.cookie('aid', token);
     }
 
