@@ -2,16 +2,18 @@ const router = require('express').Router();
 const { getCubeWithAccessories } = require('../controllers/cubes');
 const Cube = require('../models/cube');
 const jwt = require('jsonwebtoken');
+const { auth, isLoggedInCheck } = require('../controllers/user');
 
 const privateKey = process.env.PRIVATE_KEY;
 
-router.get('/create', (req, res) => {
+router.get('/create', auth, isLoggedInCheck, (req, res) => {
     res.render('createCube', {
-        title: 'Create Cube | Cube Workshop'
+        title: 'Create Cube | Cube Workshop',
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.post('/create', (req, res) => {
+router.post('/create', auth,(req, res) => {
     const {
         name,
         description,
@@ -35,21 +37,26 @@ router.post('/create', (req, res) => {
     })
 })
 
-router.get('/details/:id', async (req, res) => {
+router.get('/details/:id', isLoggedInCheck, async (req, res) => {
     const cube = await getCubeWithAccessories(req.params.id);
 
     res.render('detailsCube', {
         title: 'Details | Cube Workshop',
-        ...cube
+        ...cube,
+        isLoggedIn: req.isLoggedIn
     });
 });
 
-router.get('/edit', (req, res) => {
-    res.render('editCube.hbs');
+router.get('/edit', auth, isLoggedInCheck, (req, res) => {
+    res.render('editCube.hbs', {
+        isLoggedIn: req.isLoggedIn
+    });
 })
 
-router.get('/delete', (req, res) => {
-    res.render('deleteCube.hbs');
+router.get('/delete', auth, isLoggedInCheck, (req, res) => {
+    res.render('deleteCube.hbs', {
+        isLoggedIn: req.isLoggedIn
+    });
 })
 
 module.exports = router;

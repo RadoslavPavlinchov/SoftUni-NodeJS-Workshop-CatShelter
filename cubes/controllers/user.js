@@ -51,8 +51,61 @@ const loginUser = async (req, res) => {
     return status;
 }
 
+const auth = (req, res, next) => {
+    const token = req.cookies['aid'];
+    if (!token) { return res.redirect('/user/login'); }
+
+    try {
+        jwt.verify(token, privateKey);
+        next();
+    } catch (error) {
+        res.redirect('/user/login');
+    }
+}
+
+const alreadyLogged = (req, res, next) => {
+    const token = req.cookies['aid'];
+    if (token) { return res.redirect('/'); }
+    next();
+}
+
+const isLoggedInCheck = (req, res, next) => {
+    const token = req.cookies['aid'];
+    if (!token) { req.isLoggedIn = false }
+    try {
+        jwt.verify(token, privateKey);
+        req.isLoggedIn = true;
+    } catch (error) {
+        req.isLoggedIn = false
+    }
+
+    next();
+}
+
+const authJSON = (req, res, next) => {
+    const token = req.cookies['aid'];
+    if (!token) {
+        return res.json({
+            error: "Not authenticated"
+        })
+    }
+
+    try {
+        jwt.verify(token, privateKey);
+        next();
+    } catch (error) {
+        return res.json({
+            error: "Not authenticated"
+        })
+    }
+}
+
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    auth,
+    authJSON,
+    alreadyLogged,
+    isLoggedInCheck
 }
 

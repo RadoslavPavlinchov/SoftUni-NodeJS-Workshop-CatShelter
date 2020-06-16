@@ -1,8 +1,10 @@
 const router = require('express').Router();
-const { registerUser, loginUser } = require('../controllers/user');
+const { registerUser, loginUser, alreadyLogged, auth, isLoggedInCheck } = require('../controllers/user');
 
-router.get('/register', (req, res) => {
-    res.render('register.hbs');
+router.get('/register', alreadyLogged, isLoggedInCheck, (req, res) => {
+    res.render('register.hbs', {
+        isLoggedIn: req.isLoggedIn
+    });
 });
 
 router.post('/register', async (req, res) => {
@@ -10,11 +12,13 @@ router.post('/register', async (req, res) => {
 
     if (status) { return res.redirect('/'); }
 
-    res.redirect('/');
+    res.redirect('/user/register');
 });
 
-router.get('/login', (req, res) => {
-    res.render('login.hbs');
+router.get('/login', alreadyLogged, isLoggedInCheck, (req, res) => {
+    res.render('login.hbs', {
+        isLoggedIn: req.isLoggedIn
+        });
 });
 
 router.post('/login', async (req, res) => {
@@ -22,7 +26,7 @@ router.post('/login', async (req, res) => {
 
     if (status) { return res.redirect('/'); }
 
-    res.redirect('/')
+    res.redirect('/user/login')
 });
 
 module.exports = router;

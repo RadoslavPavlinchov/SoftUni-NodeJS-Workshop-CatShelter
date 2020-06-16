@@ -1,20 +1,21 @@
-const { Router } = require('express');
+const router = require('express').Router();
 const { getAllCubes } = require('../controllers/cubes');
+const { isLoggedInCheck } = require('../controllers/user')
 
-const router = Router();
-
-router.get('/', async (req, res) => {
+router.get('/', isLoggedInCheck, async (req, res) => {
   const cubes = await getAllCubes();
 
   res.render('index', {
     title: 'Cube Workshop',
-    cubes
+    cubes,
+    isLoggedIn: req.isLoggedIn
   });
 });
 
-router.get('/about', (req, res) => {
+router.get('/about', isLoggedInCheck, (req, res) => {
   res.render('about', {
-    title: 'About | Cube Workshop'
+    title: 'About | Cube Workshop',
+    isLoggedIn: req.isLoggedIn
   });
 });
 
