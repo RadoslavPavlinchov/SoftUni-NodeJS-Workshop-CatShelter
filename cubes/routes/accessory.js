@@ -22,8 +22,16 @@ router.post('/create', auth, async (req, res) => {
         description,
         imageUrl
     });
-    await accessory.save();
-    res.redirect('/accessory/create');
+    try {
+        await accessory.save();
+        res.redirect('/accessory/create');
+    } catch (error) {
+        res.render('createAccessory', {
+            title: 'Create Accessory',
+            isLoggedIn: req.isLoggedIn,
+            error: 'Accessory details are not valid'
+        });
+    }
 })
 
 router.get('/attach/:id', auth, isLoggedInCheck, async (req, res, next) => {
