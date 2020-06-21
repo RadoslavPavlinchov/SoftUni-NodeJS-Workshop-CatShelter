@@ -17,7 +17,7 @@ function auth(redirectUnauthenticated = true) {
                 next(); 
                 return; 
             }
-            res.redirect('user/login')
+            res.redirect('/user/login')
             next(err);
         });
     };

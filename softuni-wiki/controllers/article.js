@@ -1,6 +1,4 @@
 const { Article, User } = require('../models');
-const config = require('../config/config');
-const { validationResult } = require('express-validator');
 
 module.exports = {
     get: {
@@ -10,17 +8,23 @@ module.exports = {
             })
         },
 
+        all: (req, res) => {
+            Article.find({})
+                .select('title')
+                .then(articles => {
+                    res.render('article/all', { articles })
+                }).catch(err => {
+                    console.log(err);
+                })
+        },
+
         details: (req, res) => {
             const id = req.params.id
-            models.Course.findById(id).then(course => {
-                const hbsObject = {
-                    pageTitle: 'Details Page',
-                    course,
-                    isCreator: req.user.id.toString() === course.creator.toString(),
-                    isLoggedIn: req.cookies[config.cookie] !== undefined,
-
-                };
-                res.render('course-details', hbsObject);
+            Article.findById(id).then(article => {
+                article.isCreator = article.creator.toString() === req.user._id.toString();
+                console.log(article.isCreator);
+                article.paragraphs = article.description.split('\r\n\r\n');
+                res.render('article/details', { article });
             }).catch(err => {
                 console.log(err);
             })
@@ -28,20 +32,18 @@ module.exports = {
 
         edit: (req, res) => {
             const { id } = req.params;
-            models.Course.findById(id).then(course => {
-                const hbsObject = {
-                    course,
-                    isLoggedIn: req.cookies[config.cookie] !== undefined,
-                };
-                res.render('edit-course', hbsObject);
-            })
+            Article.findById(id)
+                .then(article => {
+                    res.render('article/edit', article);
+                })
         },
 
         delete: (req, res, next) => {
             const { id } = req.params;
-            models.Course.findByIdAndRemove(id).then(course => {
-                res.redirect('/');
-            })
+            Article.findByIdAndRemove(id)
+                .then(() => {
+                    res.redirect('/');
+                })
         }
     },
     post: {
@@ -59,7 +61,7 @@ module.exports = {
                 }).catch((err) => {
                     if (err.name === 'MongoError') {
 
-                        res.render('article/create', { errorMessages: [ 'Article already exists!' ] });
+                        res.render('article/create', { errorMessages: ['Article already exists!'] });
                         return;
                     }
                     const errorMessages = Object.entries(err.errors)
@@ -72,21 +74,33 @@ module.exports = {
 
         edit: (req, res) => {
             const { id } = req.params;
-            const { title, description, imageUrl, isPublic } = req.body;
-            const isChecked = isPublic === 'on'
+            const { description } = req.body;
 
-            const errors = validationResult(req);
+            Article.findByIdAndUpdate({ _id: id }, { description }, { runValidators: true })
+                .then(() => {
+                    res.redirect(`/article/details/${id}`);
+                })
+        },
 
-            if (!errors.isEmpty()) {
-                return res.render('create-course.hbs', {
-                    message: errors.array()[0].msg,
-                    oldInput: req.body
-                });
-            }
+        search: (req, res) => {
+            const { search } = req.body;
 
-            models.Course.findByIdAndUpdate(id, { title, description, imageUrl, isPublic: isChecked }).then(updated => {
-                res.redirect(`/course/details/${id}`);
-            })
+            Article.find({})
+                .select('title')
+                .then(articles => {
+                    const found = articles.filter(a => {
+                        a.title.toLowerCase().includes(search.toLowerCase());
+                    })
+                    res.render('article/search', { articles: found, search })
+                }) 
         }
+
+        // delete: (req, res, next) => {
+        //     const { id } = req.params;
+        //     Article.findByIdAndRemove(id)
+        //         .then(() => {
+        //         res.redirect('/');
+        //     })
+        // }
     }
 }
