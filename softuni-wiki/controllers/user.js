@@ -37,20 +37,22 @@ module.exports = {
                                 .redirect('/')
                         })
                 }).catch((err) => {
-                    if (err.name === 'MongoError') {
-                        const errorMessages = Object.entries(err.errors)
-                            .map(tuple => {
-                                tuple[1].message
-                            });
-                        res.render('user/login', { errorMessages });
-                    }
+                    // if (err.name === 'MongoError') {
+                    //     const errorMessages = Object.entries(err.errors)
+                    //         .map(tuple => {
+                    //             tuple[1].message
+                    //         });
+                    //     res.render('user/login', { errorMessages });
+                    //     return;
+                    // }
                 })
         },
         register: (req, res, next) => {
-            const { username, password, rePassword } = req.body;
+            const { username, password } = req.body;
+            const rePassword = req.body['re-password'];
 
             if (password !== rePassword) {
-                res.render('user/register', { errorMessages: [ 'Password do not match!' ] });
+                res.render('user/register', { errorMessages: ['Passwords do not match!'] });
                 return;
             }
 
@@ -59,16 +61,23 @@ module.exports = {
                     const token = jwt.createToken({ id: registeredUser._id });
 
                     res.cookie(cookie, token)
-                        .cookie('username', user.username)
+                        .cookie('username', registeredUser.username)
                         .redirect('/');
 
                 }).catch((err) => {
-                    if (err.name === 'ValidationError' || err.name === 'MongoError') {
+                    if (err.name === 'MongoError') {
+
+                        res.render('user/register', { errorMessages: [ 'User already exists' ] });
+
+                    } else if (err.name === 'ValidationError') {
+
                         const errorMessages = Object.entries(err.errors)
                             .map(tuple => {
-                                tuple[1].message
+                                return tuple[1].message;
                             });
+
                         res.render('user/register', { errorMessages });
+
                         return;
                     }
                 })

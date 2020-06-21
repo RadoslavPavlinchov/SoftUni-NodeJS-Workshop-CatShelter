@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const Model = mongoose.model;
 
-const { String, Number, Boolean, ObjectId, Date } = Schema.Types;
+const { String, Number, Boolean, ObjectId } = Schema.Types;
 
 const articleSchema = new Schema({
     title: {
@@ -14,7 +14,7 @@ const articleSchema = new Schema({
     },
     description: {
         type: String,
-        required: true,
+        required: [ true, 'Description is required!' ],
         minlength: [ 20, 'Content should be at least 20 characters!' ]
     },
     creator: {
@@ -22,8 +22,8 @@ const articleSchema = new Schema({
         ref: 'User'
     },
     createdAt: {
-        type: Date,
-        default: Date.now
+        type: mongoose.SchemaTypes.Date,
+        default: Date.now // Check the date that creates 
     },
 
 });

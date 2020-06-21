@@ -1,6 +1,6 @@
 
 {{#each errorMessages}}
-<section id="notifications"></section>
+<section id="notifications">
 <p>{{this}}</p>
 </section>
 {{/each}}
@@ -9,11 +9,11 @@
     <h2>Register</h2>
     <div class="spacer">
         <form action="/user/register" method="POST">
-            <label for="username">Username:</label>
+            <label for="username">Username</label>
             <input name="username" type="text">
-            <label for="password">Password:</label>
+            <label for="password">Password</label>
             <input name="password" type="password">
-            <label for="re-password">Repeat password:</label>
+            <label for="re-password">Repeat password</label>
             <input name="re-password" type="password">
             <input type="submit" value="Register">
         </form>

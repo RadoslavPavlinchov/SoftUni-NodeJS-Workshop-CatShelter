@@ -4,13 +4,13 @@ const { validationResult } = require('express-validator');
 
 module.exports = {
     get: {
-        create: (req, res, next) => {
-            res.render('article/create.hbs', {
+        create: (req, res) => {
+            res.render('article/create', {
                 pageTitle: 'Home Page'
             })
         },
 
-        details: (req, res, next) => {
+        details: (req, res) => {
             const id = req.params.id
             models.Course.findById(id).then(course => {
                 const hbsObject = {
@@ -20,13 +20,13 @@ module.exports = {
                     isLoggedIn: req.cookies[config.cookie] !== undefined,
 
                 };
-                res.render('course-details.hbs', hbsObject);
+                res.render('course-details', hbsObject);
             }).catch(err => {
                 console.log(err);
             })
         },
 
-        edit: (req, res, next) => {
+        edit: (req, res) => {
             const { id } = req.params;
             models.Course.findById(id).then(course => {
                 const hbsObject = {
@@ -45,39 +45,32 @@ module.exports = {
         }
     },
     post: {
-        create: (req, res, next) => {
+        create: (req, res) => {
             const { title, description } = req.body;
-            // const createdAt = new Date();
-            // const isChecked = isPublic === 'on'
-
-            // const errors = validationResult(req);
-
-            // if (!errors.isEmpty()) {
-            //     return res.render('create-course.hbs', {
-            //         message: errors.array()[0].msg,
-            //         oldInput: req.body
-            //     });
-            // }
 
             Article.create({ title, description, creator: req.user._id })
                 .then(article => {
                     req.user.articles.push(article._id);
 
-                    return User.findByIdAndUpdate({ id: req.user._id }, req.user);
+                    return User.findByIdAndUpdate({ _id: req.user._id }, req.user);
 
                 }).then(() => {
                     res.redirect('/');
                 }).catch((err) => {
+                    if (err.name === 'MongoError') {
+
+                        res.render('article/create', { errorMessages: [ 'Article already exists!' ] });
+                        return;
+                    }
                     const errorMessages = Object.entries(err.errors)
                         .map(tuple => {
-                            tuple[1].message
+                            return tuple[1].message
                         });
-                    res.render('/article/create', { errorMessages });
-                    return;
+                    res.render('article/create', { errorMessages });
                 })
         },
 
-        edit: (req, res, next) => {
+        edit: (req, res) => {
             const { id } = req.params;
             const { title, description, imageUrl, isPublic } = req.body;
             const isChecked = isPublic === 'on'
