@@ -88,9 +88,9 @@ module.exports = {
             Article.find({})
                 .select('title')
                 .then(articles => {
-                    const found = articles.filter(a => {
-                        a.title.toLowerCase().includes(search.toLowerCase());
-                    })
+                    const found = articles.filter(a => 
+                        a.title.toLowerCase().includes(search.toLowerCase())
+                    )
                     res.render('article/search', { articles: found, search })
                 }) 
         }
