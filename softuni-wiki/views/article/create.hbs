@@ -1,0 +1,18 @@
+
+{{#each errorMessages}}
+<section id="notifications">
+    <p>{{this}}</p>
+</section>
+{{/each}}
+<section>
+    <h2>Create new article</h2>
+    <div class="spacer">
+        <form action="/article/create" method="POST">
+            <label for="title">Article title</label>
+            <input name="title" type="text" class="title">
+            <label for="description">Content</label>
+            <textarea name="description"></textarea>
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</section>
