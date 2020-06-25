@@ -10,15 +10,14 @@
     <!-- Page Features -->
     <div class="row text-center">
         {{#each trips}}
-            {{> trip}}
+        {{> trip}}
+        {{else}}
+        <div style="width: 100%;">
+            <img style="max-width: 500px;" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.yLCuLG4BWO_DSnmizNr-UAHaEz%26pid%3DApi&f=1" />
+            <p class="lead" style=" width: 100%; text-align: center; font-size: 22px; font-style: italic;">
+                Hitchhiker time...</p>
+        </div>
         {{/each}}
-    </div>
-
-    
-    <div style="width: 100%;">
-        <img style="max-width: 500px;" src="https://myrealdomain.com/images/hitchhiker-cartoon-5.png" />
-        <p class="lead" style=" width: 100%; text-align: center; font-size: 22px; font-style: italic;">
-            Hitchhiker time...</p>
     </div>
     <!-- /.row -->
 </div>

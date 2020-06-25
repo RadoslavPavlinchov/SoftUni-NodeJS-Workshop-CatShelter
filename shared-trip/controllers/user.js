@@ -53,7 +53,10 @@ module.exports = {
             const rePassword = req.body['re-password'];
 
             if (password !== rePassword) {
-                res.render('user/register', { errorMessages: ['Passwords do not match!'] });
+                res.render('user/register', {
+                    message: ['Passwords do not match!'],
+                    oldInput: { email, password, rePassword }
+                });
                 return;
             }
 
@@ -68,16 +71,17 @@ module.exports = {
                 }).catch((err) => {
                     if (err.name === 'MongoError') {
 
-                        res.render('user/register', { errorMessages: [ 'User already exists' ] });
+                        res.render('user/register', { 
+                            message: 'User already exists',
+                            oldInput: { email, password, rePassword }
+                         });
 
                     } else if (err.name === 'ValidationError') {
 
-                        const errorMessages = Object.entries(err.errors)
-                            .map(tuple => {
-                                return tuple[1].message;
-                            });
-
-                        res.render('user/register', { errorMessages });
+                        res.render('user/register', { 
+                            message: err.message,
+                            oldInput: { email, password, rePassword }
+                         });
 
                         return;
                     }

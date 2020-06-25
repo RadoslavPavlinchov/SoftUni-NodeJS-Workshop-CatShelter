@@ -29,7 +29,7 @@ const tripSchema = new Schema({
     },
     description: {
         type: String,
-        required: [true, 'Description is required!'],
+        required: true
     },
     carImage: {
         type: String,
@@ -40,7 +40,11 @@ const tripSchema = new Schema({
             type: ObjectId,
             ref: 'User',
         }
-    ]
+    ],
+    driver: { // This is the creator of the trip
+        type: ObjectId,
+        ref: 'User'
+    }
 });
 
 module.exports = new Model('Trip', tripSchema);

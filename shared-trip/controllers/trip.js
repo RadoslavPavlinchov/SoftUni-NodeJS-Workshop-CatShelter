@@ -1,4 +1,5 @@
 const { Trip, User } = require('../models');
+const { validationResult } = require('express-validator'); // for the validations
 
 module.exports = {
     get: {
@@ -22,11 +23,19 @@ module.exports = {
 
         details: (req, res) => {
             const id = req.params.id
-            Trip.findById(id).then(trip => {
-                trip.isCreator = trip.creator.toString() === req.user._id.toString();
-                console.log(trip.isCreator);
-                trip.paragraphs = trip.description.split('\r\n\r\n');
-                res.render('trip/details', { trip });
+            Trip.findById(id).populate('buddies').populate('driver').then(trip => {
+                const currentUser = req.user._id.toString();
+                const availableSeats = (trip.seats) - trip.buddies.length;
+
+                // console.log(trip.buddies);
+
+                res.render('trip/details', {
+                    trip,
+                    isDriver: trip.driver.toString() === currentUser,
+                    isAlreadyJoined: trip.buddies.includes(currentUser),
+                    areSeatsAvailable: availableSeats > 0,
+                    availableSeats,
+                });
             }).catch(err => {
                 console.log(err);
             })
@@ -40,11 +49,23 @@ module.exports = {
                 })
         },
 
-        delete: (req, res, next) => {
+        join: (req, res) => {
+            const { id } = req.params;
+            const { _id } = req.user;
+
+            Promise.all([
+                Trip.updateOne({ _id: id }, { $push: { buddies: _id } }),
+                User.updateOne({ _id }, { $push: { tripsHistory: id } })
+            ]).then(() => {
+                res.redirect(`/trip/details/${id}`)
+            })
+        },
+
+        delete: (req, res) => {
             const { id } = req.params;
             Trip.findByIdAndRemove(id)
                 .then(() => {
-                    res.redirect('/');
+                    res.redirect('/trip/all');
                 })
         }
     },
@@ -55,16 +76,24 @@ module.exports = {
             let [startPoint, endPoint] = startAndEndPoint.split(' - ');
             let [date, time] = dateTime.split(' - ');
 
-            Trip.create({ startPoint, endPoint, date, time, carImage, seats, description })
+            const errors = validationResult(req); // THIS IS THE PART FOR THE EXPRESS-VALIDATOR 
+            if (!errors.isEmpty()) {
+                res.render('trip/create', {
+                    message: errors.array()[0].msg
+                })
+                return
+            }
+
+            Trip.create({ startPoint, endPoint, date, time, carImage, seats, description, driver: req.user._id })
                 .then(() => {
-                    console.log('wtf');
                     res.redirect('/trip/all');
                     // .then(trip => {
                     //     req.user.trips.push(trip._id);
                     //     return User.findByIdAndUpdate({ _id: req.user._id }, req.user);
                     // })
 
-                }).catch((err) => {
+                })
+                .catch((err) => {
                     console.log(err);
                     if (err.name === 'MongoError') {
 
