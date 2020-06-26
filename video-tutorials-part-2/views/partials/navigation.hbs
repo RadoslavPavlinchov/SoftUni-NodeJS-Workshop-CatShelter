@@ -2,13 +2,18 @@
     <a class="navbar-brand">Video Tutorials</a>
 
     <ul class="navbar-nav ml-auto">
-
+        {{#if loggedIn}}
+        <li class="nav-item">
+            <a class="nav-link" href="/home">Home </a>
+        </li>
+        {{else}}
         <li class="nav-item">
             <a class="nav-link" href="/">Home </a>
         </li>
+        {{/if}}
         {{#if isLoggedIn}}
         <li class="nav-item">
-            <a class="nav-link" href="/">Welcome, {{username}}</a>
+            <a class="nav-link" href="/home">Welcome, {{username}}</a>
         </li>
 
         <li class="nav-item">

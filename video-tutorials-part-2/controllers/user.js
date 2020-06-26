@@ -34,7 +34,7 @@ module.exports = {
 
                             res.cookie(cookie, token) // config.cookie
                                 .cookie('username', user.username)
-                                .redirect('/')
+                                .redirect('/home')
                         })
                 }).catch((err) => {
                     // if (err.name === 'MongoError') {
@@ -62,7 +62,7 @@ module.exports = {
 
                     res.cookie(cookie, token)
                         .cookie('username', registeredUser.username)
-                        .redirect('/');
+                        .redirect('/home');
 
                 }).catch((err) => {
                     if (err.name === 'MongoError') {

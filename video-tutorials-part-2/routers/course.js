@@ -2,12 +2,14 @@ const controllers = require('../controllers');
 const router = require('express').Router();
 const auth = require('../utils/auth');
 
+router.get('/home', auth(), controllers.home.get.homeLoggedIn)
+
 router.get('/create', auth(), controllers.course.get.create);
 router.post('/create', auth(), controllers.course.post.create);
 
-router.get('/all', controllers.course.get.all);
+// router.get('/all', controllers.course.get.all);
 
-router.get('/details/:id', auth(false), controllers.course.get.details);
+router.get('/details/:id', auth(), controllers.course.get.details);
 
 router.get('/edit/:id', auth(), controllers.course.get.edit);
 router.post('/edit/:id', auth(), controllers.course.post.edit);

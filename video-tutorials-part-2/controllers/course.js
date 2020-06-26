@@ -54,7 +54,7 @@ module.exports = {
 
             Course.create({ title, description, imageUrl, isPublic })
                 .then(() => {
-                    res.redirect('/');
+                    res.redirect('/home');
                 })
                 .catch((err) => {
                     if (err.name === 'MongoError') {
