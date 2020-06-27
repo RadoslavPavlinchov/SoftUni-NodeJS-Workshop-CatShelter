@@ -1,12 +1,11 @@
-const env = process.env.NODE_ENV || 'development';
-
 const config = {
     development: {
-        port: process.env.PORT || 3000,
-        dbUrl: 'mongodb://localhost:27017/',
+        env: process.env.NODE_ENV,
+        port: process.env.PORT,
+        dbUrl: process.env.DB_URL,
         cookie: 'x-auth-token'
     },
     production: { }
 }
 
-module.exports = config[env];
+module.exports = config.development;
