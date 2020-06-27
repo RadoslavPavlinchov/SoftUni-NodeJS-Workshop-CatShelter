@@ -1,5 +1,6 @@
 const { body } = require('express-validator');
 
-module.exports = [
-
-];
+module.exports = {
+    user: [],
+    course: []
+};

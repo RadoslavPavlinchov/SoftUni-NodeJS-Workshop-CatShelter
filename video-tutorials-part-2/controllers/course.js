@@ -6,41 +6,77 @@ module.exports = {
             res.render('course/create')
         },
 
-        all: (req, res) => {
-            Course.find({})
-                .select({isPublic: 1})
-                .then(courses => {
-                    res.render('course/all', { courses })
+        // all: (req, res) => {
+        //     Course.find({})
+        //         .select({isPublic: 1})
+        //         .then(courses => {
+        //             res.render('course/all', { courses })
+        //         }).catch(err => {
+        //             console.log(err);
+        //         })
+        // },
+
+        details: (req, res) => {
+            const id = req.params.id
+            Course.findById(id)
+                .lean()
+                .populate('usersEnrolled')
+                .then(course => {
+                    // course.paragraphs = course.description.split('\r\n\r\n');
+
+                    res.render('course/details', {
+                        course,
+                        isCreator: course.creator.toString() === req.user._id.toString(),
+                        isEnrolled: JSON.stringify(course.usersEnrolled).includes(JSON.stringify(req.user._id))
+                    });
                 }).catch(err => {
                     console.log(err);
                 })
         },
 
-        details: (req, res) => {
-            const id = req.params.id
-            Course.findById(id).then(course => {
-                course.isCreator = course.creator.toString() === req.user._id.toString();
-                console.log(course.isCreator);
-                course.paragraphs = course.description.split('\r\n\r\n');
-                res.render('course/details', { course });
-            }).catch(err => {
-                console.log(err);
-            })
-        },
-
         edit: (req, res) => {
             const { id } = req.params;
             Course.findById(id)
+                .lean()
                 .then(course => {
-                    res.render('course/edit', course);
+                    res.render('course/edit', {
+                        course
+                    });
                 })
         },
 
-        delete: (req, res, next) => {
+        // delete: (req, res) => {
+        //     const { id } = req.params;
+
+        //     return Promise.all([
+        //         Course.updateOne({ _id: id }, { $pull: { usersEnrolled: req.user._id } }),
+        //         User.updateOne({ _id: req.user._id }, { $pull: { courses: id } })
+        //     ])
+        //     .then(() => {
+        //         res.redirect('/home');
+        //     })
+        // },
+
+        delete: (req, res) => {
             const { id } = req.params;
             Course.findByIdAndRemove(id)
                 .then(() => {
-                    res.redirect('/');
+                    res.redirect('/home-logged');
+                })
+        },
+
+        enroll: (req, res) => {
+            const { id } = req.params;
+
+            return Promise.all([
+                Course.updateOne({ _id: id }, { $push: { usersEnrolled: req.user._id } }),
+                User.updateOne({ _id: req.user._id }, { $push: { courses: id } })
+            ])
+                .then(() => {
+                    res.redirect(`/course/details/${id}`);
+                })
+                .catch(err => {
+                    console.log(err);
                 })
         }
     },
@@ -52,7 +88,7 @@ module.exports = {
                 isPublic = true;
             }
 
-            Course.create({ title, description, imageUrl, isPublic })
+            Course.create({ title, description, imageUrl, isPublic, creator: req.user._id })
                 .then(() => {
                     res.redirect('/home');
                 })
@@ -72,11 +108,12 @@ module.exports = {
 
         edit: (req, res) => {
             const { id } = req.params;
-            const { description } = req.body;
+            const { title, description, imageUrl } = req.body;
 
-            Course.findByIdAndUpdate({ _id: id }, { description }, { runValidators: true })
+
+            Course.findByIdAndUpdate({ _id: id }, { title, description, imageUrl }) // , { runValidators: true }
                 .then(() => {
-                    res.redirect(`/course/details/${id}`);
+                    res.redirect('/home-logged');
                 })
         },
 
@@ -87,10 +124,13 @@ module.exports = {
                 .select('title')
                 .then(courses => {
                     const found = courses.filter(a => 
-                        a.title.toLowerCase().includes(search.toLowerCase())
+                        console.log(a.title.includes(search)),
+                        // a.title.toLowerCase().includes(search.toLowerCase())
                     )
-                    res.render('course/search', { courses: found, search })
-                }) 
+                    res.render('home-logged', { 
+                        courses: found
+                    })
+                })
         }
 
         // delete: (req, res, next) => {

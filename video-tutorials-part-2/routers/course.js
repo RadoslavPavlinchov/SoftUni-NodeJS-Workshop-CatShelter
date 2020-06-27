@@ -16,6 +16,8 @@ router.post('/edit/:id', auth(), controllers.course.post.edit);
 
 router.get('/delete/:id', auth(), controllers.course.get.delete);
 
-router.post('/search', controllers.course.post.search);
+router.post('/search', auth(), controllers.course.post.search);
+
+router.get('/enroll/:id', auth(), controllers.course.get.enroll);
 
 module.exports = router;

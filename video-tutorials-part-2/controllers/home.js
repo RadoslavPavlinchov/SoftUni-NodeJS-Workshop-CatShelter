@@ -3,8 +3,9 @@ const { Course } = require('../models');
 module.exports = {
     get: {
         home: (req, res, next) => {
-            Course.find()
-                .sort('-usersEnrolled.length')
+            Course.find({ isPublic: true })
+                .lean()
+                .sort('-usersEnrolled')
                 .limit(3)
                 .then(courses => {
                     res.render('home', { courses });
@@ -21,7 +22,9 @@ module.exports = {
             // })
         },
         homeLoggedIn: (req, res, next) => {
-            Course.find()
+            Course.find({ isPublic: true })
+                .lean()
+                .sort('-createdAt')
                 .then(courses => {
                     res.render('home-logged', { courses });
                 })

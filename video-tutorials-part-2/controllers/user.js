@@ -2,7 +2,6 @@ const { User } = require('../models');
 const jwt = require('../utils/jwt');
 
 const { cookie } = require('../config/config');
-const config = require('../config/config');
 
 module.exports = {
     get: {
@@ -13,7 +12,7 @@ module.exports = {
             res.render('user/register')
         },
         logout: (req, res, next) => {
-            res.clearCookie(config.cookie)
+            res.clearCookie(cookie)
                 .clearCookie('username')
                 .redirect('/');
         }
@@ -27,32 +26,36 @@ module.exports = {
                     Promise.all([user, user.matchPassword(password)])
                         .then(([user, match]) => {
                             if (!match) {
-                                res.render('user/login', { message: 'User password is invalid' });
+                                res.render('user/login', { 
+                                    message: 'User password is invalid',
+                                    oldInput: { username, password }
+                                 });
                                 return;
                             }
                             const token = jwt.createToken({ id: user._id });
 
-                            res.cookie(cookie, token) // config.cookie
+                            res.cookie(cookie, token, { maxAge: 3600000 })
                                 .cookie('username', user.username)
                                 .redirect('/home')
                         })
                 }).catch((err) => {
-                    // if (err.name === 'MongoError') {
-                    //     const errorMessages = Object.entries(err.errors)
-                    //         .map(tuple => {
-                    //             tuple[1].message
-                    //         });
-                    //     res.render('user/login', { errorMessages });
-                    //     return;
-                    // }
+                    
+                    res.render('user/login', {
+                        message: err.message,
+                        oldInput: { username, password } 
+                       });
+                   return;
                 })
         },
         register: (req, res, next) => {
             const { username, password } = req.body;
-            const rePassword = req.body['repeatPassword'];
+            const rePassword = req.body['repeat-password'];
 
             if (password !== rePassword) {
-                res.render('user/register', { errorMessages: ['Passwords do not match!'] });
+                res.render('user/register', { 
+                    message: 'Passwords do not match!',
+                    oldInput: { username, password, rePassword }
+                });
                 return;
             }
 
@@ -60,24 +63,24 @@ module.exports = {
                 .then(registeredUser => {
                     const token = jwt.createToken({ id: registeredUser._id });
 
-                    res.cookie(cookie, token)
+                    res.cookie(cookie, token, { maxAge: 3600000 })
                         .cookie('username', registeredUser.username)
                         .redirect('/home');
 
                 }).catch((err) => {
                     if (err.name === 'MongoError') {
 
-                        res.render('user/register', { errorMessages: [ 'User already exists' ] });
+                        res.render('user/register', { 
+                            message: 'User already exists!',
+                            oldInput: { username, password, rePassword } 
+                        });
 
                     } else if (err.name === 'ValidationError') {
 
-                        const errorMessages = Object.entries(err.errors)
-                            .map(tuple => {
-                                return tuple[1].message;
+                        res.render('user/register', {
+                             message: err.message,
+                             oldInput: { username, password, rePassword } 
                             });
-
-                        res.render('user/register', { errorMessages });
-
                         return;
                     }
                 })

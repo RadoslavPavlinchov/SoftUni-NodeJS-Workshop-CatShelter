@@ -2,7 +2,7 @@
     <a class="navbar-brand">Video Tutorials</a>
 
     <ul class="navbar-nav ml-auto">
-        {{#if loggedIn}}
+        {{#if isLoggedIn}}
         <li class="nav-item">
             <a class="nav-link" href="/home">Home </a>
         </li>
@@ -31,4 +31,6 @@
     </ul>
 </nav>
 
+{{#if message}}
 {{> notifications}}
+{{/if}}
