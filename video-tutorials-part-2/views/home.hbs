@@ -1,7 +1,3 @@
-<section class="notifications">
-    <p class="notification-message">Message...</p>
-</section>
-
 <main>
     <div class="jumbotron jumbotron-fluid">
         <div class="container">
@@ -16,12 +12,11 @@
             <div class="row d-flex justify-content-center">
                 <div class="card-deck">
                     {{#each courses}}
-                        {{> courseNotLogged}}
+                    {{> courseNotLogged}}
                     {{else}}
-                        <h4 class="text-center">No courses...</h4>
+                    <h4 class="text-center">No courses...</h4>
                     {{/each}}
                 </div>
             </div>
         </div>
     </div>
-</main>

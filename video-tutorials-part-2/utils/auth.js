@@ -1,10 +1,10 @@
 const jwt = require('./jwt');
-const config = require('../config/config');
+const { cookie } = require('../config/config');
 const { User } = require('../models');
 
 function auth(redirectUnauthenticated = true) {
     return function (req, res, next) {
-        const token = req.cookies[config.cookie] || '';
+        const token = req.cookies[cookie] || '';
 
         jwt.verifyToken(token)
             .then((data) => {
@@ -18,7 +18,6 @@ function auth(redirectUnauthenticated = true) {
                 return; 
             }
             res.redirect('/user/login')
-            next(err);
         });
     };
 }

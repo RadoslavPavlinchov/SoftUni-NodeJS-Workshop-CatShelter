@@ -1,28 +1,21 @@
-<section class="notifications">
-    <p class="notification-message">Message...</p>
+<h1 class="text-center">Courses</h1>
+<section>
+    <a href="/course/create" class="btn btn-warning ">Create Course</a>
+    <form class="search float-right">
+        <label>Search: </label>
+        <input type="text">
+        <input type="submit" class="btn btn-info" value="Search">
+    </form>
 </section>
 
-<main>
-    <h1 class="text-center">Courses</h1>
-    <section>
-        <a href="/course/create" class="btn btn-warning ">Create Course</a>
-        <form class="search float-right">
-            <label>Search: </label>
-            <input type="text">
-            <input type="submit" class="btn btn-info" value="Search">
-        </form>
-    </section>
-
-    <div class="container mt-3">
-        <div class="row ">
-            <div class="card-deck d-flex justify-content-center">
-                {{#each courses}}
-                    {{> courseLoggedIn}}
-                {{else}}
-                    <h3 class="text-center">No courses...</h3>
-                {{/each}}
-            </div>
+<div class="container mt-3">
+    <div class="row ">
+        <div class="card-deck d-flex justify-content-center">
+            {{#each courses}}
+            {{> courseLoggedIn}}
+            {{else}}
+            <h3 class="text-center">No courses...</h3>
+            {{/each}}
         </div>
     </div>
-
-</main>
+</div>

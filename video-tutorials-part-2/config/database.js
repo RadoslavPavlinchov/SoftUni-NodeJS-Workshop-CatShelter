@@ -6,6 +6,7 @@ module.exports = () => {
     return mongoose.connect(config.dbUrl + dbName, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useCreateIndex: true
     },
     console.log('Database is ready!'));
 }
